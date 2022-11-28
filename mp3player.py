@@ -1,12 +1,3 @@
-# dictionary with songs names and songs source for easier access 
-
-
-
-
-
-
-
-
 import pygame as pg
 import tkinter as tk
 from tkinter import filedialog
