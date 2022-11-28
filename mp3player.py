@@ -64,6 +64,11 @@ class Musicplayer:
             try:
                 songbox.insert(tk.END,song_name)
                 self.play_restart.set("Play")
+                directory=self.playlist[self.actual_song ]
+                mixer.init()
+                mixer.music.load(directory)
+                mixer.music.set_volume(0.01)
+                mixer.music.set_endevent(self.SONG_END)
             except:
                 print("error")
 
@@ -75,17 +80,13 @@ class Musicplayer:
 
     def play(self):
         if self.playlist:
-            directory=self.playlist[self.actual_song ]
-            mixer.init()
-            mixer.music.load(directory)
-            mixer.music.set_volume(0.01)
-            mixer.music.set_endevent(self.SONG_END)
-            mixer.music.play(1, 0.0)
+            
+            
             
             if not self.playing:   
-                
+                mixer.music.play(1, 0.0)
                 self.playing=True
-                # self.ispaused=False
+                self.ispaused=False
                 self.play_restart.set('Pause')
                 print("gra")
 
