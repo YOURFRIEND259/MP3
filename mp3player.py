@@ -2,6 +2,34 @@ import pygame as pg
 import tkinter as tk
 from tkinter import filedialog
 from pygame import mixer
+import math
+import time
+
+
+
+"""
+TIMER
+"""
+def calculate_time(func):
+     
+    # added arguments inside the inner1,
+    # if function takes any arguments,
+    # can be added like this.
+    def inner1(*args, **kwargs):
+ 
+        # storing time before function execution
+        begin = time.time()
+         
+        func(*args, **kwargs)
+ 
+        # storing time after function execution
+        end = time.time()
+        print("Total time taken in : ", func.__name__, end - begin)
+ 
+    return inner1
+
+
+
 
 root=tk.Tk()
 songbox=tk.Listbox(root,bg="black",fg="lightgreen",width=60)
@@ -53,6 +81,7 @@ class Musicplayer:
         self.actual_song = 0
         self.playlist=list()
 
+    @calculate_time
     def load(self):
         directory=filedialog.askopenfilenames()
         for i in directory:
@@ -80,9 +109,7 @@ class Musicplayer:
 
     def play(self):
         if self.playlist:
-            
-            
-            
+    
             if not self.playing:   
                 mixer.music.play(1, 0.0)
                 self.playing=True
@@ -112,27 +139,15 @@ class Musicplayer:
     
 
     def forward(self):
-        global select
-        select=songbox.curselection()
-        if select[0]>=len(songz)-1:
-            next_song=(list(songz.keys())[0])
-            print(next_song)
-            select=select[0]+1
+        self.play_restart.set('Pause')
+        if self.actual_song+2<=len(self.playlist):
+            self.actual_song+=1
+
         else:
-            next_song=(list(songz.keys())[select[0]+1])
-            print(next_song)
-            select=select[0]+1
-        # next_song=songbox.curselection()
-        # if next_song[0]>=len(songz)-1:
-        #     next_song=next_song[0]+1
-        # else:
-        #     next_song=next_song[0]-len(songz)-1
-        song=songbox.get(next_song)
-        mixer.music.load(songz[song])
-        print("select",songz[song])
+            self.actual_song= 0
+        mixer.music.load(self.playlist[self.actual_song ])
         mixer.music.play()
         self.play_restart.set('Pause')
-        self.playing=True
     
     def back(self):
         select=songbox.curselection()
