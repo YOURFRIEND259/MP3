@@ -83,10 +83,10 @@ class Musicplayer:
 
     @calculate_time
     def load(self):
-        directory=filedialog.askopenfilenames()
-        for i in directory:
+        source=filedialog.askopenfilenames()
+        for i in source:
             self.playlist.append(i)
-        for i in directory:
+        for i in source:
             song_name=i[i.rfind('/')+1:]
             songz[i]=song_name
             print(songz)
@@ -139,33 +139,23 @@ class Musicplayer:
     
 
     def forward(self):
-        self.play_restart.set('Pause')
         if self.actual_song+2<=len(self.playlist):
             self.actual_song+=1
 
         else:
             self.actual_song= 0
-        mixer.music.load(self.playlist[self.actual_song ])
+        mixer.music.load(self.playlist[self.actual_song])
         mixer.music.play()
         self.play_restart.set('Pause')
     
     def back(self):
-        select=songbox.curselection()
-        if select[0]<=0:
-            next_song=(list(songz.keys())[select[-1]])
-            
-            print(next_song)
-            select=select[0]-1
+        if self.actual_song==0:
+            self.actual_song=len(self.playlist)-1
         else:
-            next_song=(list(songz.keys())[0])
-            print(next_song)
-            select=select[0]+1
-            
-        mixer.music.load(songz[next_song])
-        print("select",songz[next_song])
+            self.actual_song-=1
+        mixer.music.load(self.playlist[self.actual_song])
         mixer.music.play()
         self.play_restart.set('Pause')
-        self.playing=True
 
     def stop(self):
         mixer.music.stop()
