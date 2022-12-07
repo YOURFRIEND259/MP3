@@ -9,6 +9,8 @@ import time
 """
 TIMER
 """
+
+
 def calculate_time(func):
     def inner1(*args, **kwargs):
         begin = time.time()
@@ -17,9 +19,11 @@ def calculate_time(func):
         print("Total time taken in : ", func.__name__, end - begin)
     return inner1
 
+
 root = tk.Tk()
 songbox = tk.Listbox(root, bg="black", fg="lightgreen", width=60)
 songz = {}
+
 
 class Musicplayer:
     def __init__(self, window) -> None:
@@ -32,31 +36,37 @@ class Musicplayer:
         self.isrepeat = tk.IntVar
 
         """
+        SLIDERS
+        """
+        volume_slider=tk.Scale(window, from_=0, to=1,orient=tk.VERTICAL, command=self.volume,length=125,resolution = .01,)
+        volume_slider.place(x=0)
+
+        """
         BUTTONS
         """
-        repeat_box = tk.Checkbutton(
-            window, text='repeat', variable=self.isrepeat, onvalue=1, offvalue=0, command=self.repeat)
-        repeat_box.pack()
+        # repeat_box = tk.Checkbutton(
+        #     window, text='repeat', variable=self.isrepeat, onvalue=1, offvalue=0, command=self.repeat)
+        # repeat_box.pack()
 
         back_button = tk.Button(window, text="Back",
-                                font=20, command=self.back)
-        back_button.place(x=200, y=250, anchor='center')
+                                width=8, font=20, command=self.back)
+        back_button.place(x=120, y=240, anchor='center')
 
-        forward_button = tk.Button(
-            window, text="Forward", font=20, command=self.forward)
-        forward_button.place(x=100, y=250, anchor='center')
+        forward_button = tk.Button(window, text="Forward",
+                                   font=20, command=self.forward)
+        forward_button.place(x=275, y=240, anchor='center')
 
         load_button = tk.Button(window, text="Load",
-                                width=10, font=20, command=self.load)
-        load_button.place(x=300, y=250, anchor='center')
+                                width=8, font=20, command=self.load)
+        load_button.place(x=330, y=280, anchor='center')
 
-        play_button = tk.Button(
-            window, textvariable=self.play_restart, width=10, font=20, command=self.play)
-        play_button.place(x=50, y=250, anchor='center')
+        play_button = tk.Button(window, textvariable=self.play_restart,
+                                width=8, font=20, command=self.play)
+        play_button.place(x=200, y=240, anchor='center')
 
         stop_button = tk.Button(window, text="Stop",
                                 font=160, command=self.stop)
-        stop_button.place(x=150, y=250, anchor='center')
+        stop_button.place(x=200, y=280, anchor='center')
 
         """
         STATEMENTS
@@ -73,13 +83,19 @@ class Musicplayer:
     @calculate_time
     def load(self):
         source = filedialog.askopenfilenames()
-        for i in source:
-            self.playlist.append(i)
-        for i in source:
-            song_name = i[i.rfind('/')+1:]
-            songz[i] = song_name
-            print(songz)
-            try:
+        try:
+            for i in source:
+                song_name = ".".join(i[i.rfind('/')+1:].split(".")[:-1])
+
+                if i in self.playlist:
+                    print(f"{song_name} is already on the playlist")
+                    continue
+
+                self.playlist.append(i)
+
+                songz[i] = song_name
+                print(songz)
+
                 songbox.insert(tk.END, song_name)
                 self.play_restart.set("Play")
                 directory = self.playlist[self.actual_song]
@@ -87,8 +103,9 @@ class Musicplayer:
                 mixer.music.load(directory)
                 mixer.music.set_volume(0.01)
                 mixer.music.set_endevent(self.SONG_END)
-            except:
-                print("error")
+                self.playing = False
+        except:
+            print("error")
 
     def play(self):
         if self.playlist:
@@ -98,18 +115,15 @@ class Musicplayer:
                 self.playing = True
                 self.ispaused = False
                 self.play_restart.set('Pause')
-                print("gra")
 
             elif not self.ispaused and self.playing:
                 mixer.music.pause()
-                print("pauza")
                 self.ispaused = True
                 self.play_restart.set('Resume')
                 print("pause", self.ispaused)
 
             elif self.ispaused and self.playing:
                 mixer.music.unpause()
-                print("po pauzie?????????")
                 self.ispaused = False
                 self.play_restart.set('Pause')
                 print("resume", self.ispaused)
@@ -125,8 +139,11 @@ class Musicplayer:
                 self.actual_song = 0
 
             mixer.music.load(self.playlist[self.actual_song])
+            print(self.playlist[self.actual_song])
             mixer.music.play()
             self.play_restart.set('Pause')
+            self.ispaused = False
+            self.playing = True
         except:
             print("there are no songs loaded")
 
@@ -139,6 +156,8 @@ class Musicplayer:
             mixer.music.load(self.playlist[self.actual_song])
             mixer.music.play()
             self.play_restart.set('Pause')
+            self.ispaused = False
+            self.playing = True
         except:
             print("there are no songs loaded")
 
@@ -155,6 +174,13 @@ class Musicplayer:
         # if (self.isrepeat==1):
         #     mixer.music.play(-1)
         pass
+
+    def volume(self,x):
+        global volume_slider
+        value= float(x)
+        mixer.music.set_volume(value)
+
+        
 
 
 """
