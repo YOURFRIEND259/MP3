@@ -34,7 +34,7 @@ class Musicplayer:
 
         self.play_restart = tk.StringVar()
         self.play_restart.set('Play')
-        self.isrepeat = tk.IntVar
+        self.isrepeat = tk.IntVar()
 
         """
         SLIDERS
@@ -45,9 +45,9 @@ class Musicplayer:
         """
         BUTTONS
         """
-        # repeat_box = tk.Checkbutton(
-        #     window, text='repeat', variable=self.isrepeat, onvalue=1, offvalue=0, command=self.repeat)
-        # repeat_box.pack()
+        repeat_box = tk.Checkbutton(
+            window, text='repeat', variable=self.isrepeat, onvalue=1, offvalue=0, command=self.repeat)
+        repeat_box.pack()
 
         back_button = tk.Button(window, text="Back",
                                 width=8, font=20, command=self.back)
@@ -77,6 +77,8 @@ class Musicplayer:
         self.SONG_END = pg.USEREVENT + 1
         self.actual_song = 0
         self.playlist = list()
+        self.stopped=False
+        self.repeating=False
 
     """
     BUTTON FUNCTIONS
@@ -129,7 +131,7 @@ class Musicplayer:
                 self.ispaused = False
                 self.play_restart.set('Pause')
                 print("resume", self.ispaused)
-
+            self.stopped=False
         else:
             print("empty playlist")
 
@@ -142,10 +144,11 @@ class Musicplayer:
 
             mixer.music.load(self.playlist[self.actual_song])
             print(self.playlist[self.actual_song])
-            mixer.music.play()
+            mixer.music.play(1)
             self.play_restart.set('Pause')
             self.ispaused = False
             self.playing = True
+            self.stopped=False
         except:
             print("there are no songs loaded")
 
@@ -156,10 +159,11 @@ class Musicplayer:
             else:
                 self.actual_song -= 1
             mixer.music.load(self.playlist[self.actual_song])
-            mixer.music.play()
+            mixer.music.play(1)
             self.play_restart.set('Pause')
             self.ispaused = False
             self.playing = True
+            self.stopped=False
         except:
             print("there are no songs loaded")
 
@@ -167,12 +171,19 @@ class Musicplayer:
         try:
             mixer.music.stop()
             self.playing = False
+            self.stopped=True
             print("stop")
             self.play_restart.set('Play')
         except:
             print("there are no songs loaded")
 
     def repeat(self):
+        if self.isrepeat.get()==1:
+            self.repeating=True
+            print("tru")
+        elif self.isrepeat.get()==0:
+            self.repeating=False
+            print("false")
         # if (self.isrepeat==1):
         #     mixer.music.play(-1)
         pass
@@ -183,15 +194,15 @@ class Musicplayer:
         mixer.music.set_volume(value)
 
     def check_music(self):
-        """
-        Listens to END_MUSIC event and triggers next song to play if current 
-        song has finished
-        :return: None
-        """
+
         pg.init()
         for event in pg.event.get():
-            if event.type == self.SONG_END:
-                self.forward()
+            if event.type == self.SONG_END and not self.stopped:
+                if self.repeating:
+                   self.stop()
+                   self.play()
+                else:
+                    self.forward()
 
 """
 PROGRAM'S LOOP
@@ -203,4 +214,3 @@ asd.check_music()
 while True:
     asd.check_music()
     root.update()
-
