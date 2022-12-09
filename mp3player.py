@@ -192,7 +192,7 @@ class Musicplayer:
         for event in pg.event.get():
             if event.type == self.SONG_END:
                 self.forward()
-
+sss
 
         
 
