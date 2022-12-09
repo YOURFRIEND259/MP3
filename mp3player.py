@@ -193,6 +193,7 @@ class Musicplayer:
             if event.type == self.SONG_END:
                 self.forward()
 
+
         
 
 # def checker():
