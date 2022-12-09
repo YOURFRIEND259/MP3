@@ -106,6 +106,7 @@ class Musicplayer:
                 mixer.music.set_endevent(self.SONG_END)
                 self.playing = False
         except:
+            
             print("error")
 
     def play(self):
