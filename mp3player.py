@@ -192,25 +192,15 @@ class Musicplayer:
         for event in pg.event.get():
             if event.type == self.SONG_END:
                 self.forward()
-sss
-
-        
-
-# def checker():
-#     while 1:
-#         pass
-# t1=Thread(target=checker)
 
 """
 PROGRAM'S LOOP
 """
 songbox.pack(pady=20, padx=35)
 
-# Musicplayer(root)
-# t1.start()
 asd=Musicplayer(root)
 asd.check_music()
 while True:
     asd.check_music()
     root.update()
-# root.mainloop()
+
