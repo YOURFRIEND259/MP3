@@ -1,15 +1,16 @@
 import pygame as pg
 import tkinter as tk
 from tkinter import filedialog
+from tkinter import ttk
 from pygame import mixer
 import math
 import time
+from threading import Thread
 
 
 """
 TIMER
 """
-
 
 def calculate_time(func):
     def inner1(*args, **kwargs):
@@ -38,8 +39,8 @@ class Musicplayer:
         """
         SLIDERS
         """
-        volume_slider=tk.Scale(window, from_=0, to=1,orient=tk.VERTICAL, command=self.volume,length=125,resolution = .01,)
-        volume_slider.place(x=0)
+        volume_slider=ttk.Scale(window, from_=0, to=1,orient=tk.VERTICAL, command=self.volume,length=125,value=0.1)
+        volume_slider.place(x=5,y=20)
 
         """
         BUTTONS
@@ -101,7 +102,7 @@ class Musicplayer:
                 directory = self.playlist[self.actual_song]
                 mixer.init()
                 mixer.music.load(directory)
-                mixer.music.set_volume(0.01)
+                mixer.music.set_volume(0.1)
                 mixer.music.set_endevent(self.SONG_END)
                 self.playing = False
         except:
@@ -180,13 +181,34 @@ class Musicplayer:
         value= float(x)
         mixer.music.set_volume(value)
 
+    def check_music(self):
+        """
+        Listens to END_MUSIC event and triggers next song to play if current 
+        song has finished
+        :return: None
+        """
+        pg.init()
+        for event in pg.event.get():
+            if event.type == self.SONG_END:
+                self.forward()
+
         
 
+# def checker():
+#     while 1:
+#         pass
+# t1=Thread(target=checker)
 
 """
 PROGRAM'S LOOP
 """
-songbox.pack(pady=20)
+songbox.pack(pady=20, padx=35)
 
-Musicplayer(root)
-root.mainloop()
+# Musicplayer(root)
+# t1.start()
+asd=Musicplayer(root)
+asd.check_music()
+while True:
+    asd.check_music()
+    root.update()
+# root.mainloop()
