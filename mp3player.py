@@ -7,6 +7,7 @@ import math
 import time
 from threading import Thread
 
+from mutagen.mp3 import MP3
 
 """
 TIMER
@@ -41,6 +42,9 @@ class Musicplayer:
         """
         volume_slider=ttk.Scale(window, from_=0, to=1,orient=tk.VERTICAL, command=self.volume,length=125,value=0.1)
         volume_slider.place(x=5,y=20)
+
+        song_slider=ttk.Scale(window, from_=0, to=1,orient=tk.HORIZONTAL, command=self.song_time,length=310,value=0.1)
+        song_slider.place(x=45,y=190)
 
         """
         BUTTONS
@@ -180,21 +184,23 @@ class Musicplayer:
     def repeat(self):
         if self.isrepeat.get()==1:
             self.repeating=True
-            print("tru")
         elif self.isrepeat.get()==0:
             self.repeating=False
-            print("false")
-        # if (self.isrepeat==1):
-        #     mixer.music.play(-1)
-        pass
 
     def volume(self,x):
-        global volume_slider
         value= float(x)
         mixer.music.set_volume(value)
 
-    def check_music(self):
+    def song_time(self,x):
+        audio = MP3(self.playlist[self.actual_song])
+        total_length = audio.info.length
+        print(total_length)
+        pg.mixer.music.play(loops=0,start=int(float(x)))
+        
+        value= float(x)
+        pass
 
+    def check_music(self):
         pg.init()
         for event in pg.event.get():
             if event.type == self.SONG_END and not self.stopped:
@@ -203,14 +209,15 @@ class Musicplayer:
                    self.play()
                 else:
                     self.forward()
+    
 
 """
 PROGRAM'S LOOP
 """
 songbox.pack(pady=20, padx=35)
 
-asd=Musicplayer(root)
-asd.check_music()
+app=Musicplayer(root)
+app.check_music()
 while True:
-    asd.check_music()
+    app.check_music()
     root.update()
