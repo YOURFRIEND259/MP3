@@ -3,16 +3,13 @@ import tkinter as tk
 from tkinter import filedialog
 from tkinter import ttk
 from pygame import mixer
-import math
 import time
-from threading import Thread
 
 from mutagen.mp3 import MP3
 
 """
 TIMER
 """
-
 def calculate_time(func):
     def inner1(*args, **kwargs):
         begin = time.time()
@@ -26,6 +23,7 @@ root = tk.Tk()
 songbox = tk.Listbox(root, bg="black", fg="lightgreen", width=60)
 songz = {}
 
+current_time = tk.DoubleVar()
 
 class Musicplayer:
     def __init__(self, window) -> None:
@@ -40,10 +38,11 @@ class Musicplayer:
         """
         SLIDERS
         """
-        volume_slider=ttk.Scale(window, from_=0, to=1,orient=tk.VERTICAL, command=self.volume,length=125,value=0.1)
+        volume_slider=ttk.Scale(window, from_=1, to=0,orient=tk.VERTICAL, command=self.volume,length=125,value=0.1)
         volume_slider.place(x=5,y=20)
 
-        song_slider=ttk.Scale(window, from_=0, to=1,orient=tk.HORIZONTAL, command=self.song_time,length=310,value=0.1)
+
+        song_slider=ttk.Scale(window, from_=0, to=1,orient=tk.HORIZONTAL, command=self.song_time,length=310,value=0.1, variable=current_time)
         song_slider.place(x=45,y=190)
 
         """
@@ -194,8 +193,8 @@ class Musicplayer:
     def song_time(self,x):
         audio = MP3(self.playlist[self.actual_song])
         total_length = audio.info.length
-        print(total_length)
-        pg.mixer.music.play(loops=0,start=int(float(x)))
+        print(total_length* current_time.get())
+        pg.mixer.music.play(loops=0,start=int(float(total_length* current_time.get())))
         
         value= float(x)
         pass
